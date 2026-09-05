@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "xdcxm48XJlE=",
+  "success": true,
+  "projectFilePath": "f:\\ransomdoors-Bug-Fix\\ransomdoors-Bug-Fix\\rans0m.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio\\3.0.1\\naudio.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.asio\\3.0.1\\naudio.asio.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.core\\3.0.1\\naudio.core.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.dmo\\3.0.1\\naudio.dmo.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.midi\\3.0.1\\naudio.midi.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.vorbis\\1.5.0\\naudio.vorbis.1.5.0.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.wasapi\\3.0.1\\naudio.wasapi.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.winforms\\3.0.1\\naudio.winforms.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\naudio.winmm\\3.0.1\\naudio.winmm.3.0.1.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\nvorbis\\0.10.4\\nvorbis.0.10.4.nupkg.sha512",
+    "C:\\Users\\ineti\\.nuget\\packages\\system.numerics.tensors\\9.0.0\\system.numerics.tensors.9.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
