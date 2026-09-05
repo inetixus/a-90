@@ -11,6 +11,7 @@ namespace rans0m
         private static readonly byte[] cachedVaseBreakWav;
         private static readonly byte[] cachedGlitchProcessingWav;
         private static readonly byte[] cachedInstallWav;
+        private static readonly byte[] cachedDamageWav;
         private static WaveOut? activeProcessingWaveOut;
 
         static CoinSoundSynthesizer()
@@ -45,6 +46,23 @@ namespace rans0m
             catch
             {
                 cachedInstallWav = Array.Empty<byte>();
+            }
+
+            try
+            {
+                using var damageStream = Properties.Resources.damage;
+                if (damageStream != null)
+                {
+                    cachedDamageWav = DecodeVorbisToWav(damageStream);
+                }
+                else
+                {
+                    cachedDamageWav = Array.Empty<byte>();
+                }
+            }
+            catch
+            {
+                cachedDamageWav = Array.Empty<byte>();
             }
         }
 
@@ -105,13 +123,9 @@ namespace rans0m
         {
             try
             {
-                using var stream = Properties.Resources.damage;
-                if (stream == null) return;
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                ms.Position = 0;
-
-                var reader = new NAudio.Vorbis.VorbisWaveReader(ms);
+                if (cachedDamageWav == null || cachedDamageWav.Length == 0) return;
+                var ms = new MemoryStream(cachedDamageWav);
+                var reader = new WaveFileReader(ms);
                 var waveOut = new WaveOut { Volume = Math.Clamp(volume, 0f, 1f) };
                 waveOut.Init(reader);
                 waveOut.PlaybackStopped += (s, e) =>
@@ -127,6 +141,66 @@ namespace rans0m
                 waveOut.Play();
             }
             catch { }
+        }
+
+        private static byte[] DecodeVorbisToWav(Stream oggStream)
+        {
+            try
+            {
+                using var vorbis = new NVorbis.VorbisReader(oggStream);
+                using var ms = new MemoryStream();
+                using var bw = new BinaryWriter(ms);
+
+                int channels = vorbis.Channels;
+                int sampleRate = vorbis.SampleRate;
+                int bitsPerSample = 16;
+                int byteRate = sampleRate * channels * (bitsPerSample / 8);
+                short blockAlign = (short)(channels * (bitsPerSample / 8));
+
+                List<short> pcm = new List<short>();
+                float[] buf = new float[4096];
+                int read;
+                while ((read = vorbis.ReadSamples(buf, 0, buf.Length)) > 0)
+                {
+                    for (int i = 0; i < read; i++)
+                    {
+                        float s = Math.Clamp(buf[i], -1.0f, 1.0f);
+                        pcm.Add((short)(s * 32767f));
+                    }
+                }
+
+                int dataSize = pcm.Count * 2;
+
+                // RIFF header
+                bw.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
+                bw.Write(36 + dataSize);
+                bw.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
+
+                // fmt chunk
+                bw.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
+                bw.Write(16);
+                bw.Write((short)1); // PCM
+                bw.Write((short)channels);
+                bw.Write(sampleRate);
+                bw.Write(byteRate);
+                bw.Write(blockAlign);
+                bw.Write((short)bitsPerSample);
+
+                // data chunk
+                bw.Write(System.Text.Encoding.ASCII.GetBytes("data"));
+                bw.Write(dataSize);
+                for (int i = 0; i < pcm.Count; i++)
+                {
+                    bw.Write(pcm[i]);
+                }
+                bw.Flush();
+
+                return ms.ToArray();
+            }
+            catch
+            {
+                return Array.Empty<byte>();
+            }
         }
 
         public static void PlayWindowSlamGlitch(float volume = 0.85f)

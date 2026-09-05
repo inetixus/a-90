@@ -19,45 +19,49 @@ namespace rans0m
             cts = new CancellationTokenSource();
             var token = cts.Token;
 
-            Task.Run(async () =>
+            // Run 3 concurrent listeners so incoming coin clicks are never queued or dropped
+            for (int w = 0; w < 3; w++)
             {
-                while (!token.IsCancellationRequested)
+                Task.Run(async () =>
                 {
-                    try
+                    while (!token.IsCancellationRequested)
                     {
-                        using var server = new NamedPipeServerStream(
-                            PipeName,
-                            PipeDirection.In,
-                            NamedPipeServerStream.MaxAllowedServerInstances,
-                            PipeTransmissionMode.Byte,
-                            PipeOptions.Asynchronous);
-
-                        await server.WaitForConnectionAsync(token);
-
-                        using var reader = new StreamReader(server, Encoding.UTF8);
-                        string? line = await reader.ReadLineAsync(token);
-
-                        if (!string.IsNullOrEmpty(line))
+                        try
                         {
-                            try
+                            using var server = new NamedPipeServerStream(
+                                PipeName,
+                                PipeDirection.In,
+                                NamedPipeServerStream.MaxAllowedServerInstances,
+                                PipeTransmissionMode.Byte,
+                                PipeOptions.Asynchronous);
+
+                            await server.WaitForConnectionAsync(token);
+
+                            using var reader = new StreamReader(server, Encoding.UTF8);
+                            string? line = await reader.ReadLineAsync(token);
+
+                            if (!string.IsNullOrEmpty(line))
                             {
-                                string[] parts = line.Split('|', 3);
-                                if (parts.Length == 3 && int.TryParse(parts[0], out int x) && int.TryParse(parts[1], out int y))
+                                try
                                 {
-                                    onCoinReceived(parts[2].Trim().Trim('"'), new Point(x, y));
+                                    string[] parts = line.Split('|', 3);
+                                    if (parts.Length == 3 && int.TryParse(parts[0], out int x) && int.TryParse(parts[1], out int y))
+                                    {
+                                        onCoinReceived(parts[2].Trim().Trim('"'), new Point(x, y));
+                                    }
+                                    else
+                                    {
+                                        onCoinReceived(line.Trim().Trim('"'), null);
+                                    }
                                 }
-                                else
-                                {
-                                    onCoinReceived(line.Trim().Trim('"'), null);
-                                }
+                                catch { }
                             }
-                            catch { }
                         }
+                        catch (OperationCanceledException) { break; }
+                        catch { await Task.Delay(50, token); }
                     }
-                    catch (OperationCanceledException) { break; }
-                    catch { await Task.Delay(50, token); }
-                }
-            }, token);
+                }, token);
+            }
         }
 
         public static void Stop()
@@ -76,7 +80,7 @@ namespace rans0m
             try
             {
                 using var client = new NamedPipeClientStream(".", PipeName, PipeDirection.Out);
-                client.Connect(800); // Wait up to 800ms to see if running instance responds
+                client.Connect(1500); // Wait up to 1500ms to connect to the active game instance
 
                 using var writer = new StreamWriter(client, Encoding.UTF8);
                 if (clickPos.HasValue)

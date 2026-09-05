@@ -274,25 +274,6 @@ namespace rans0m
             }
         }
 
-        public Bitmap RenderFrame(long elapsedMs)
-        {
-            int width = ClientSize.Width > 50 ? ClientSize.Width : 544;
-            int height = ClientSize.Height > 50 ? ClientSize.Height : 315;
-            Bitmap bmp = new Bitmap(width, height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                if (elapsedMs < PROCESSING_DURATION_MS)
-                {
-                    DrawProcessingScreen(g, elapsedMs);
-                }
-                else
-                {
-                    DrawThankYouScreen(g);
-                }
-            }
-            return bmp;
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             CoinSoundSynthesizer.StopProcessingSound();

@@ -141,8 +141,8 @@ namespace rans0m
                 g.FillRectangle(headerBrush, headerRect);
                 g.DrawString(Text, font, textBrush, 6, 3);
 
-                // Draw nearly hidden close button [X] - subtle, blends with header
-                int xAlpha = 35; // Very faint
+                // Draw nearly hidden close button [X] - almost hidden, blends into header
+                int xAlpha = 20; // Almost hidden
                 using (Font xFont = new Font("Arial", 8f, FontStyle.Regular))
                 using (Brush xBrush = new SolidBrush(Color.FromArgb(xAlpha, headerTextColor)))
                 {
@@ -224,8 +224,8 @@ namespace rans0m
 
             if (Global.underRansom)
             {
-                // Check if user clicked the fake [X] close button
-                if (closeButtonRect.Contains(e.Location))
+                // Check if user clicked the fake [X] close button or top-right header area
+                if (closeHitRect.Contains(e.Location) || closeButtonRect.Contains(e.Location) || (e.Y <= 22 && e.X >= Width - 36))
                 {
                     // Punish the user for trying to close a window!
                     CoinSoundSynthesizer.PlayDamageSound(0.85f);

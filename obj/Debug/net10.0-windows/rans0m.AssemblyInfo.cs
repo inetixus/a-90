@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ixar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+9efb8e148c985f98d898bd0663ac5f34db7735b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("ransom")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ransom")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.1.0")]

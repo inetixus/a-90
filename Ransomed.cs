@@ -37,7 +37,7 @@ namespace rans0m
 
         public Point GetCashTargetCenter()
         {
-            if (this.IsDisposed || !this.IsHandleCreated)
+            if (this.IsDisposed)
             {
                 if (!LastKnownCashTargetCenter.IsEmpty) return LastKnownCashTargetCenter;
                 int screenW = Screen.PrimaryScreen?.Bounds.Width ?? 1920;
@@ -47,17 +47,28 @@ namespace rans0m
 
             try
             {
-                Point p = pnl_cash.PointToScreen(new Point(pnl_cash.Width / 2, pnl_cash.Height / 2));
-                LastKnownCashTargetCenter = p;
-                return p;
+                if (this.IsHandleCreated && pnl_cash != null && pnl_cash.IsHandleCreated)
+                {
+                    Point p = pnl_cash.PointToScreen(new Point(pnl_cash.Width / 2, pnl_cash.Height / 2));
+                    LastKnownCashTargetCenter = p;
+                    return p;
+                }
             }
-            catch
+            catch { }
+
+            // Reliable geometric fallback based on form's known location (pnl_cash is at (12, 260) with size (198, 58))
+            try
             {
-                if (!LastKnownCashTargetCenter.IsEmpty) return LastKnownCashTargetCenter;
-                int screenW = Screen.PrimaryScreen?.Bounds.Width ?? 1920;
-                int screenH = Screen.PrimaryScreen?.Bounds.Height ?? 1080;
-                return new Point(screenW / 2, screenH / 2);
+                Point fallback = new Point(this.Location.X + 111, this.Location.Y + 289);
+                LastKnownCashTargetCenter = fallback;
+                return fallback;
             }
+            catch { }
+
+            if (!LastKnownCashTargetCenter.IsEmpty) return LastKnownCashTargetCenter;
+            int sW = Screen.PrimaryScreen?.Bounds.Width ?? 1920;
+            int sH = Screen.PrimaryScreen?.Bounds.Height ?? 1080;
+            return new Point(sW / 2, sH / 2);
         }
 
         private bool isCompletingPayment = false;
@@ -86,6 +97,16 @@ namespace rans0m
         public void OnSmallCoinArrived(int amount)
         {
             if (this.IsDisposed) return;
+
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.BeginInvoke(() => OnSmallCoinArrived(amount));
+                }
+                catch { }
+                return;
+            }
 
             Global.ransomLeft = Math.Max(0, Global.ransomLeft - amount);
             txt_cashToPay.Text = Global.ransomLeft.ToString();
@@ -124,6 +145,7 @@ namespace rans0m
             txt_cashToPay.Text = Global.ransomLeft.ToString();
             Global.RandomPosControl(this);
             baseLocation = this.Location;
+            GetCashTargetCenter();
 
             // Store internal baseline positions for independent internal trembling
             basePicFace = pictureBox1.Location;
@@ -407,16 +429,6 @@ namespace rans0m
         private void TitleBar_MouseUp(object sender, MouseEventArgs e)
         {
             dragging = false;
-        }
-
-        private void btn_quickPay_Click(object sender, EventArgs e)
-        {
-            Global.ransomLeft = 0;
-            txt_cashToPay.Text = "0";
-
-            Global.underRansom = false;
-            new ThankYou().Show();
-            Dispose();
         }
 
         // ------------ EVENT HANDLERS ------------------------------------------

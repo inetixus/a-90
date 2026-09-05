@@ -30,9 +30,10 @@ namespace rans0m
             string downloadsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            // Determine item distribution: 1 or 2 Honey Pots (250 coins each), remainder normal coins (10-35 each)
-            int potCount = Global.rng.Next(1, 3);
-            int coinCount = (potCount == 1) ? 9 : 6;
+            // Determine item distribution: 2 or 3 Honey Pots (250 coins each), and 16 to 22 normal coins (25-50 each)
+            // Generates 1100 - 1500+ total coins so the player always has an abundance of coins to collect!
+            int potCount = Global.rng.Next(2, 4); // 2 or 3 Honey Pots
+            int coinCount = Global.rng.Next(16, 23); // 16 to 22 Gold Coins
             List<(string fileName, string type, int value)> itemsToCreate = new();
 
             for (int p = 0; p < potCount; p++)
@@ -44,29 +45,29 @@ namespace rans0m
             List<int> coinValues = new();
             for (int c = 0; c < coinCount; c++)
             {
-                int val = Global.rng.Next(10, 36); // whole number between 10 and 35 inclusive
+                int val = Global.rng.Next(25, 51); // 25 to 50 coins each
                 coinValues.Add(val);
                 currentSum += val;
             }
 
-            // Ensure total spawned across all items is at least 500 so user can always satisfy full ransom
-            while (currentSum < 500)
+            // Ensure total spawned across all items is at least 1100 (more than double the required 500 ransom)
+            while (currentSum < 1100)
             {
                 bool bumped = false;
                 for (int i = 0; i < coinValues.Count; i++)
                 {
-                    if (coinValues[i] < 35)
+                    if (coinValues[i] < 50)
                     {
                         coinValues[i]++;
                         currentSum++;
                         bumped = true;
-                        if (currentSum >= 500) break;
+                        if (currentSum >= 1100) break;
                     }
                 }
                 if (!bumped)
                 {
-                    coinValues.Add(30);
-                    currentSum += 30;
+                    coinValues.Add(35);
+                    currentSum += 35;
                 }
             }
 
@@ -88,7 +89,7 @@ namespace rans0m
                     {
                         targetDir = desktopDir;
                     }
-                    else if (i < 8 && Directory.Exists(desktopDir))
+                    else if (i < 15 && Directory.Exists(desktopDir))
                     {
                         targetDir = desktopDir;
                     }
@@ -168,6 +169,20 @@ namespace rans0m
                     {
                         try { File.Delete(f); } catch { }
                     }
+                }
+
+                string downloadsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                if (Directory.Exists(downloadsDir))
+                {
+                    foreach (var f in Directory.GetFiles(downloadsDir, "Gold Coin*.gold")) try { File.Delete(f); } catch { }
+                    foreach (var f in Directory.GetFiles(downloadsDir, "Honey Pot*.pot")) try { File.Delete(f); } catch { }
+                }
+
+                string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                if (Directory.Exists(docsDir))
+                {
+                    foreach (var f in Directory.GetFiles(docsDir, "Gold Coin*.gold")) try { File.Delete(f); } catch { }
+                    foreach (var f in Directory.GetFiles(docsDir, "Honey Pot*.pot")) try { File.Delete(f); } catch { }
                 }
             }
             catch { }
